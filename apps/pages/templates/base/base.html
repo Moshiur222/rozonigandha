@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Royal Aura Jewellery</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/frontend.css' %}">
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-left">
+      <span><i class="fa-solid fa-phone"></i> Hotline: +880 1234-567890</span>
+      <span><i class="fa-solid fa-envelope"></i> support@royalaura.com</span>
+    </div>
+
+    <div class="top-right">
+      <select id="currencySelect">
+        <option value="BDT">BDT</option>
+        <option value="USD">USD</option>
+      </select>
+
+      <select>
+        <option>Bangladesh</option>
+        <option>United States</option>
+        <option>United Kingdom</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <button class="hamburger" id="menuOpen">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <a href="#" class="logo">Royal<span>Aura</span></a>
+
+    <nav class="desktop-menu">
+      <a href="#home">Home</a>
+
+      <div class="dropdown">
+        <button>Jewellery <i class="fa-solid fa-chevron-down"></i></button>
+        <div class="dropdown-menu">
+          <a href="#products" data-cat="Diamond Jewellery">Diamond Jewellery</a>
+          <a href="#products" data-cat="Gold Jewellery">Gold Jewellery</a>
+          <a href="#products" data-cat="Rings">Rings</a>
+          <a href="#products" data-cat="Earrings">Earrings</a>
+          <a href="#products" data-cat="Necklaces">Necklaces</a>
+          <a href="#products" data-cat="Bangles">Bangles</a>
+        </div>
+      </div>
+
+      <a href="#categories">Collections</a>
+      <a href="#products">Shop</a>
+      <a href="#track">Track Order</a>
+      <a href="#footer">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button id="accountToggle"><i class="fa-regular fa-user"></i></button>
+      <button id="wishlistToggle"><i class="fa-regular fa-heart"></i><span id="wishlistCount">0</span></button>
+      <button id="cartToggle"><i class="fa-solid fa-bag-shopping"></i><span id="cartCount">0</span></button>
+      <button id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+    </div>
+  </header>
+
+  <!-- SEARCH PANEL -->
+  <section class="search-panel" id="searchPanel">
+    <div class="search-inner">
+      <input type="text" id="searchInput" placeholder="Search rings, necklaces, diamond, gold...">
+      <div id="searchSuggestions"></div>
+    </div>
+  </section>
+
+  <!-- MOBILE SIDEBAR -->
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="mobile-sidebar" id="mobileSidebar">
+    <button class="close-btn" id="menuClose"><i class="fa-solid fa-xmark"></i></button>
+    <a href="#" class="logo sidebar-logo">Royal<span>Aura</span></a>
+
+    <a href="#home">Home</a>
+    <a href="#categories">Collections</a>
+    <a href="#products">Shop</a>
+    <a href="#track">Track Order</a>
+    <a href="#footer">Contact</a>
+
+    <button class="sidebar-btn" id="mobileThemeToggle">
+      <i class="fa-solid fa-circle-half-stroke"></i> Toggle Theme
+    </button>
+  </aside>
+
+  <!-- CART SIDEBAR -->
+  <aside class="side-panel" id="cartPanel">
+    <button class="close-btn" data-close="cart"><i class="fa-solid fa-xmark"></i></button>
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+
+    <div class="cart-summary">
+      <div><span>Subtotal</span><strong id="subtotalAmount">৳0</strong></div>
+      <div><span>Delivery</span><strong id="deliveryAmount">৳80</strong></div>
+      <div class="total-line"><span>Total</span><strong id="totalAmount">৳0</strong></div>
+      <button class="gold-btn full" id="checkoutOpen">Checkout</button>
+    </div>
+  </aside>
+
+  <!-- WISHLIST SIDEBAR -->
+  <aside class="side-panel" id="wishlistPanel">
+    <button class="close-btn" data-close="wishlist"><i class="fa-solid fa-xmark"></i></button>
+    <h2>Your Wishlist</h2>
+    <div id="wishlistItems"></div>
+  </aside>
+
+  <!-- ACCOUNT MODAL -->
+  <div class="modal" id="accountModal">
+    <div class="modal-card small-modal">
+      <button class="close-btn" data-close="account"><i class="fa-solid fa-xmark"></i></button>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Login</button>
+        <button class="tab" data-tab="signup">Sign Up</button>
+      </div>
+
+      <form class="auth-form active" id="loginForm">
+        <h3>Welcome Back</h3>
+        <input type="email" placeholder="Email address">
+        <input type="password" placeholder="Password">
+        <button type="button" class="gold-btn full">Login</button>
+        <p class="muted">Demo UI only. Connect backend later.</p>
+      </form>
+
+      <form class="auth-form" id="signupForm">
+        <h3>Create Account</h3>
+        <input type="text" placeholder="Full name">
+        <input type="email" placeholder="Email address">
+        <input type="password" placeholder="Password">
+        <button type="button" class="gold-btn full">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- QUICK VIEW MODAL -->
+  <div class="modal" id="quickModal">
+    <div class="modal-card product-modal">
+      <button class="close-btn" data-close="quick"><i class="fa-solid fa-xmark"></i></button>
+
+      <div class="product-modal-grid">
+        <div>
+          <img id="modalMainImg" class="modal-main-img" src="" alt="">
+          <div class="thumbs" id="modalThumbs"></div>
+        </div>
+
+        <div>
+          <span id="modalCode" class="product-code"></span>
+          <h2 id="modalTitle"></h2>
+          <p id="modalDesc" class="muted"></p>
+
+          <div class="modal-price">
+            <span id="modalOld"></span>
+            <strong id="modalPrice"></strong>
+            <em id="modalDiscount"></em>
+          </div>
+
+          <ul class="spec-list">
+            <li><strong>Metal:</strong> <span id="modalMetal"></span></li>
+            <li><strong>Weight:</strong> <span id="modalWeight"></span></li>
+            <li><strong>Stone:</strong> <span id="modalStone"></span></li>
+            <li><strong>Stock:</strong> <span id="modalStock"></span></li>
+          </ul>
+
+          <div class="share-row">
+            <span>Share:</span>
+            <i class="fa-brands fa-facebook"></i>
+            <i class="fa-brands fa-whatsapp"></i>
+            <i class="fa-brands fa-x-twitter"></i>
+          </div>
+
+          <div class="modal-actions">
+            <button class="gold-btn" id="modalAddCart">Add To Cart</button>
+            <button class="dark-btn">Buy Now</button>
+            <button class="outline-btn" id="modalWishlist"><i class="fa-regular fa-heart"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div class="modal" id="checkoutModal">
+    <div class="modal-card checkout-modal">
+      <button class="close-btn" data-close="checkout"><i class="fa-solid fa-xmark"></i></button>
+      <h2>Checkout</h2>
+
+      <div class="checkout-grid">
+        <form>
+          <input type="text" placeholder="Customer name">
+          <input type="tel" placeholder="Phone number">
+          <input type="email" placeholder="Email address">
+          <input type="text" placeholder="City">
+          <textarea placeholder="Full delivery address"></textarea>
+          <select>
+            <option>Cash on Delivery</option>
+            <option>Bkash</option>
+            <option>Nagad</option>
+            <option>Card Payment</option>
+          </select>
+          <button type="button" class="gold-btn full" id="placeOrder">Place Order</button>
+        </form>
+
+        <div class="order-summary">
+          <h3>Order Summary</h3>
+          <div id="checkoutSummary"></div>
+          <hr>
+          <strong id="checkoutTotal"></strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-content reveal">
+      <span>Premium Jewellery House</span>
+      <h1>Timeless Luxury Crafted For Every Celebration</h1>
+      <p>Discover elegant diamond, gold, wedding and gift collections with a premium shopping experience.</p>
+      <div class="hero-buttons">
+        <a href="#products" class="gold-btn">Shop Collection</a>
+        <a href="#categories" class="glass-btn">Explore Categories</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="section reveal" id="categories">
+    <div class="section-title">
+      <span>Shop By Category</span>
+      <h2>Luxury Collections</h2>
+    </div>
+
+    <div class="category-grid" id="categoryGrid"></div>
+  </section>
+
+  <!-- FEATURED -->
+  <section class="section reveal">
+    <div class="section-title">
+      <span>Exclusive Selection</span>
+      <h2>Featured Jewellery</h2>
+    </div>
+
+    <div class="mini-slider">
+      <button id="prevFeatured"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="mini-track" id="featuredTrack"></div>
+      <button id="nextFeatured"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="section shop-section reveal" id="products">
+    <div class="section-title">
+      <span>Our Store</span>
+      <h2>Product Listing</h2>
+    </div>
+
+    <div class="shop-layout">
+      <aside class="filters">
+        <h3>Filter Products</h3>
+
+        <label>Category</label>
+        <select id="categoryFilter">
+          <option value="all">All Categories</option>
+        </select>
+
+        <label>Metal Type</label>
+        <select id="metalFilter">
+          <option value="all">All Metals</option>
+          <option value="Gold">Gold</option>
+          <option value="Diamond">Diamond</option>
+          <option value="Pearl">Pearl</option>
+          <option value="Gemstone">Gemstone</option>
+        </select>
+
+        <label>Gender</label>
+        <select id="genderFilter">
+          <option value="all">All</option>
+          <option value="Women">Women</option>
+          <option value="Men">Men</option>
+          <option value="Kids">Kids</option>
+        </select>
+
+        <label>Occasion</label>
+        <select id="occasionFilter">
+          <option value="all">All Occasions</option>
+          <option value="Wedding">Wedding</option>
+          <option value="Gift">Gift</option>
+          <option value="Daily Wear">Daily Wear</option>
+          <option value="Party">Party</option>
+        </select>
+
+        <label>Availability</label>
+        <select id="stockFilter">
+          <option value="all">All</option>
+          <option value="In Stock">In Stock</option>
+          <option value="Out of Stock">Out of Stock</option>
+        </select>
+
+        <label>Max Price</label>
+        <input type="range" id="priceFilter" min="1000" max="200000" value="200000">
+        <p>৳<span id="priceValue">200000</span></p>
+
+        <label>Sort</label>
+        <select id="sortFilter">
+          <option value="latest">Latest</option>
+          <option value="low">Price Low To High</option>
+          <option value="high">Price High To Low</option>
+          <option value="popular">Popular</option>
+        </select>
+
+        <button class="outline-btn full" id="resetFilters">Reset Filter</button>
+      </aside>
+
+      <div class="products-area">
+        <div class="shop-toolbar">
+          <p id="resultCount">Showing products</p>
+          <input type="text" id="productSearch" placeholder="Search product...">
+        </div>
+
+        <div class="product-grid" id="productGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SALE -->
+  <section class="section sale-bg reveal">
+    <div class="section-title">
+      <span>Limited Deal</span>
+      <h2>Sale Products</h2>
+    </div>
+
+    <div class="product-grid" id="saleGrid"></div>
+  </section>
+
+  <!-- TRACK ORDER -->
+  <section class="track-section reveal" id="track">
+    <div class="track-box">
+      <h2>Track Your Order</h2>
+      <p>Enter your order ID and see the delivery progress.</p>
+
+      <div class="track-form">
+        <input type="text" id="trackInput" placeholder="Example: RA-1001">
+        <button id="trackBtn">Track Now</button>
+      </div>
+
+      <div class="tracking-steps" id="trackingSteps">
+        <div class="step active"><i class="fa-solid fa-check"></i><span>Order Placed</span></div>
+        <div class="step"><i class="fa-solid fa-box"></i><span>Processing</span></div>
+        <div class="step"><i class="fa-solid fa-truck"></i><span>Shipped</span></div>
+        <div class="step"><i class="fa-solid fa-gem"></i><span>Delivered</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section reveal">
+    <div class="section-title">
+      <span>Customer Love</span>
+      <h2>Testimonials</h2>
+    </div>
+
+    <div class="testimonial-grid">
+      <div class="testimonial-card">“Beautiful design and premium quality. The delivery was very smooth.” <strong>- Ayesha</strong></div>
+      <div class="testimonial-card">“The ring looked even better than the photos. Highly recommended.” <strong>- Rahim</strong></div>
+      <div class="testimonial-card">“Excellent service, elegant packaging and authentic jewellery feel.” <strong>- Nusrat</strong></div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter reveal">
+    <h2>Join Our Luxury Circle</h2>
+    <p>Get new arrivals, exclusive offers and jewellery care tips.</p>
+    <form>
+      <input type="email" placeholder="Enter your email">
+      <button type="button">Subscribe</button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="footer">
+    <div>
+      <h3>Royal<span>Aura</span></h3>
+      <p>A premium jewellery shopping experience for modern luxury lovers.</p>
+    </div>
+
+    <div>
+      <h4>Store Links</h4>
+      <a href="#products">Shop</a>
+      <a href="#categories">Collections</a>
+      <a href="#track">Track Order</a>
+      <a href="#">Return Policy</a>
+    </div>
+
+    <div>
+      <h4>Contact</h4>
+      <p>Dhaka, Bangladesh</p>
+      <p>+880 1234-567890</p>
+      <p>support@royalaura.com</p>
+    </div>
+
+    <div>
+      <h4>Social</h4>
+      <div class="socials">
+        <i class="fa-brands fa-facebook"></i>
+        <i class="fa-brands fa-instagram"></i>
+        <i class="fa-brands fa-youtube"></i>
+        <i class="fa-brands fa-tiktok"></i>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-top" id="backTop">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="{% static 'js/frontend.js' %}"></script>
+</body>
+</html>
