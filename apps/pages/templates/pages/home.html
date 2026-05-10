@@ -1,1 +1,16 @@
-{% extends 'base/base.html' %}
+{% extends "base/base.html" %}
+
+{% block title %}Royal Aura Jewellery{% endblock %}
+
+{% block content %}
+
+{% include "sections/hero.html" %}
+{% include "sections/categories.html" %}
+{% include "sections/featured.html" %}
+{% include "sections/products.html" %}
+{% include "sections/sale.html" %}
+{% include "sections/track_order.html" %}
+{% include "sections/testimonials.html" %}
+{% include "sections/newsletter.html" %}
+
+{% endblock %}

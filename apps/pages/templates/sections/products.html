@@ -1,0 +1,74 @@
+<section class="section shop-section reveal" id="products">
+    <div class="section-title">
+        <span>Our Store</span>
+        <h2>Product Listing</h2>
+    </div>
+
+    <div class="shop-layout">
+        <aside class="filters">
+            <h3>Filter Products</h3>
+
+            <label>Category</label>
+            <select id="categoryFilter">
+                <option value="all">All Categories</option>
+            </select>
+
+            <label>Metal Type</label>
+            <select id="metalFilter">
+                <option value="all">All Metals</option>
+                <option value="Gold">Gold</option>
+                <option value="Diamond">Diamond</option>
+                <option value="Pearl">Pearl</option>
+                <option value="Gemstone">Gemstone</option>
+            </select>
+
+            <label>Gender</label>
+            <select id="genderFilter">
+                <option value="all">All</option>
+                <option value="Women">Women</option>
+                <option value="Men">Men</option>
+                <option value="Kids">Kids</option>
+            </select>
+
+            <label>Occasion</label>
+            <select id="occasionFilter">
+                <option value="all">All Occasions</option>
+                <option value="Wedding">Wedding</option>
+                <option value="Gift">Gift</option>
+                <option value="Daily Wear">Daily Wear</option>
+                <option value="Party">Party</option>
+            </select>
+
+            <label>Availability</label>
+            <select id="stockFilter">
+                <option value="all">All</option>
+                <option value="In Stock">In Stock</option>
+                <option value="Out of Stock">Out of Stock</option>
+            </select>
+
+            <label>Max Price</label>
+            <input type="range" id="priceFilter" min="1000" max="200000" value="200000">
+
+            <p>৳<span id="priceValue">200000</span></p>
+
+            <label>Sort</label>
+            <select id="sortFilter">
+                <option value="latest">Latest</option>
+                <option value="low">Price Low To High</option>
+                <option value="high">Price High To Low</option>
+                <option value="popular">Popular</option>
+            </select>
+
+            <button class="outline-btn full" id="resetFilters">Reset Filter</button>
+        </aside>
+
+        <div class="products-area">
+            <div class="shop-toolbar">
+                <p id="resultCount">Showing products</p>
+                <input type="text" id="productSearch" placeholder="Search product...">
+            </div>
+
+            <div class="product-grid" id="productGrid"></div>
+        </div>
+    </div>
+</section>

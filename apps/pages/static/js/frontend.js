@@ -229,6 +229,7 @@ function formatPrice(amount) {
   if (currentCurrency === "USD") {
     return "$" + Math.round(amount / 110);
   }
+
   return "৳" + amount.toLocaleString("en-BD");
 }
 
@@ -244,11 +245,18 @@ function saveState() {
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2200);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2200);
 }
 
 function getProduct(id) {
-  return products.find(p => p.id === Number(id));
+  return products.find(product => product.id === Number(id));
+}
+
+function goToDetails(id) {
+  window.location.href = `/products/${id}/`;
 }
 
 // ============================
@@ -261,34 +269,62 @@ function productCard(product) {
 
   return `
     <article class="product-card">
+
       <span class="badge">Save ${discount}%</span>
       <span class="stock">${product.stock}</span>
 
-      <button class="wish-btn ${isWish ? "active" : ""}" onclick="toggleWishlist(${product.id})">
+      <button 
+        class="wish-btn ${isWish ? "active" : ""}" 
+        onclick="event.stopPropagation(); toggleWishlist(${product.id})"
+        title="Add to Wishlist"
+      >
         <i class="fa-${isWish ? "solid" : "regular"} fa-heart"></i>
       </button>
 
-      <div class="product-image">
-        <img src="${product.img}" alt="${product.title}">
-      </div>
+      <button 
+        class="quick-btn" 
+        onclick="event.stopPropagation(); openQuickView(${product.id})"
+        title="Quick View"
+      >
+        <i class="fa-regular fa-eye"></i>
+      </button>
 
-      <div class="product-info">
-        <span class="product-meta">${product.category} / ${product.metal}</span>
-        <h3>${product.title}</h3>
+      <div class="product-click" onclick="goToDetails(${product.id})">
 
-        <div class="price-row">
-          <span class="old-price">${formatPrice(product.oldPrice)}</span>
-          <span class="new-price">${formatPrice(product.price)}</span>
-          <span class="save">${discount}% OFF</span>
+        <div class="product-image">
+          <img src="${product.img}" alt="${product.title}">
         </div>
 
-        <div class="product-actions">
-          <button class="gold-btn" onclick="addToCart(${product.id})">Add Cart</button>
-          <button class="outline-btn" onclick="openQuickView(${product.id})">Quick View</button>
-          <button class="dark-btn" onclick="buyNow(${product.id})">Buy Now</button>
-          <button class="outline-btn" onclick="openQuickView(${product.id})">Details</button>
+        <div class="product-info">
+          <span class="product-meta">${product.category} / ${product.metal}</span>
+
+          <h3>${product.title}</h3>
+
+          <div class="price-row">
+            <span class="old-price">${formatPrice(product.oldPrice)}</span>
+            <span class="new-price">${formatPrice(product.price)}</span>
+            <span class="save">${discount}% OFF</span>
+          </div>
         </div>
+
       </div>
+
+      <div class="product-actions">
+        <button 
+          class="gold-btn" 
+          onclick="event.stopPropagation(); addToCart(${product.id})"
+        >
+          Add Cart
+        </button>
+
+        <button 
+          class="dark-btn" 
+          onclick="event.stopPropagation(); buyNow(${product.id})"
+        >
+          Buy Now
+        </button>
+      </div>
+
     </article>
   `;
 }
@@ -302,38 +338,53 @@ function getFilteredProducts() {
   const maxPrice = Number(priceFilter.value);
   const search = productSearch.value.toLowerCase().trim();
 
-  let filtered = products.filter(p => {
-    const matchCat = cat === "all" || p.category === cat || p.subcategory === cat;
-    const matchMetal = metal === "all" || p.metal === metal;
-    const matchGender = gender === "all" || p.gender === gender;
-    const matchOccasion = occasion === "all" || p.occasion === occasion;
-    const matchStock = stock === "all" || p.stock === stock;
-    const matchPrice = p.price <= maxPrice;
+  let filtered = products.filter(product => {
+    const matchCat = cat === "all" || product.category === cat || product.subcategory === cat;
+    const matchMetal = metal === "all" || product.metal === metal;
+    const matchGender = gender === "all" || product.gender === gender;
+    const matchOccasion = occasion === "all" || product.occasion === occasion;
+    const matchStock = stock === "all" || product.stock === stock;
+    const matchPrice = product.price <= maxPrice;
+
     const matchSearch =
-      p.title.toLowerCase().includes(search) ||
-      p.category.toLowerCase().includes(search) ||
-      p.subcategory.toLowerCase().includes(search);
+      product.title.toLowerCase().includes(search) ||
+      product.category.toLowerCase().includes(search) ||
+      product.subcategory.toLowerCase().includes(search);
 
     return matchCat && matchMetal && matchGender && matchOccasion && matchStock && matchPrice && matchSearch;
   });
 
-  if (sortFilter.value === "low") filtered.sort((a, b) => a.price - b.price);
-  if (sortFilter.value === "high") filtered.sort((a, b) => b.price - a.price);
-  if (sortFilter.value === "popular") filtered.sort((a, b) => b.popular - a.popular);
-  if (sortFilter.value === "latest") filtered.sort((a, b) => b.id - a.id);
+  if (sortFilter.value === "low") {
+    filtered.sort((a, b) => a.price - b.price);
+  }
+
+  if (sortFilter.value === "high") {
+    filtered.sort((a, b) => b.price - a.price);
+  }
+
+  if (sortFilter.value === "popular") {
+    filtered.sort((a, b) => b.popular - a.popular);
+  }
+
+  if (sortFilter.value === "latest") {
+    filtered.sort((a, b) => b.id - a.id);
+  }
 
   return filtered;
 }
 
 function renderProducts() {
   const filtered = getFilteredProducts();
-  productGrid.innerHTML = filtered.map(productCard).join("") || `<p class="muted">No products found.</p>`;
+
+  productGrid.innerHTML =
+    filtered.map(productCard).join("") || `<p class="muted">No products found.</p>`;
+
   resultCount.textContent = `Showing ${filtered.length} of ${products.length} products`;
 }
 
 function renderSale() {
   saleGrid.innerHTML = products
-    .filter(p => discountPercent(p.oldPrice, p.price) >= 10)
+    .filter(product => discountPercent(product.oldPrice, product.price) >= 10)
     .slice(0, 4)
     .map(productCard)
     .join("");
@@ -347,19 +398,24 @@ function renderFeatured() {
 }
 
 function renderCategories() {
-  categoryGrid.innerHTML = categories.map(cat => `
-    <button class="category-card" onclick="filterByCategory('${cat}')">
-      <span>${cat}</span>
+  categoryGrid.innerHTML = categories.map(category => `
+    <button class="category-card" onclick="filterByCategory('${category}')">
+      <span>${category}</span>
     </button>
   `).join("");
 
-  categoryFilter.innerHTML = `<option value="all">All Categories</option>` +
-    categories.map(cat => `<option value="${cat}">${cat}</option>`).join("");
+  categoryFilter.innerHTML =
+    `<option value="all">All Categories</option>` +
+    categories.map(category => `<option value="${category}">${category}</option>`).join("");
 }
 
-function filterByCategory(cat) {
-  categoryFilter.value = cat;
-  document.getElementById("products").scrollIntoView({ behavior: "smooth" });
+function filterByCategory(category) {
+  categoryFilter.value = category;
+
+  document.getElementById("products").scrollIntoView({
+    behavior: "smooth"
+  });
+
   renderProducts();
 }
 
@@ -370,8 +426,14 @@ function filterByCategory(cat) {
 function addToCart(id) {
   const existing = cart.find(item => item.id === id);
 
-  if (existing) existing.qty++;
-  else cart.push({ id, qty: 1 });
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({
+      id: id,
+      qty: 1
+    });
+  }
 
   saveState();
   renderCart();
@@ -384,18 +446,23 @@ function buyNow(id) {
 }
 
 function updateQty(id, change) {
-  const item = cart.find(i => i.id === id);
+  const item = cart.find(cartItem => cartItem.id === id);
+
   if (!item) return;
 
   item.qty += change;
-  if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+
+  if (item.qty <= 0) {
+    cart = cart.filter(cartItem => cartItem.id !== id);
+  }
 
   saveState();
   renderCart();
 }
 
 function removeCart(id) {
-  cart = cart.filter(i => i.id !== id);
+  cart = cart.filter(item => item.id !== id);
+
   saveState();
   renderCart();
 }
@@ -408,17 +475,23 @@ function renderCart() {
   } else {
     cartItems.innerHTML = cart.map(item => {
       const product = getProduct(item.id);
+
       return `
         <div class="cart-item">
           <img src="${product.img}" alt="${product.title}">
+
           <div>
             <strong>${product.title}</strong>
+
             <p>${formatPrice(product.price)}</p>
+
             <div class="qty-row">
               <button onclick="updateQty(${item.id}, -1)">-</button>
               <span>${item.qty}</span>
               <button onclick="updateQty(${item.id}, 1)">+</button>
-              <button onclick="removeCart(${item.id})"><i class="fa-solid fa-trash"></i></button>
+              <button onclick="removeCart(${item.id})">
+                <i class="fa-solid fa-trash"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -426,7 +499,10 @@ function renderCart() {
     }).join("");
   }
 
-  const subtotal = cart.reduce((sum, item) => sum + getProduct(item.id).price * item.qty, 0);
+  const subtotal = cart.reduce((sum, item) => {
+    return sum + getProduct(item.id).price * item.qty;
+  }, 0);
+
   const delivery = subtotal > 0 ? 80 : 0;
   const total = subtotal + delivery;
 
@@ -440,6 +516,7 @@ function renderCart() {
 function renderCheckoutSummary() {
   const checkoutSummary = document.getElementById("checkoutSummary");
   const checkoutTotal = document.getElementById("checkoutTotal");
+
   if (!checkoutSummary || !checkoutTotal) return;
 
   if (!cart.length) {
@@ -450,10 +527,18 @@ function renderCheckoutSummary() {
 
   checkoutSummary.innerHTML = cart.map(item => {
     const product = getProduct(item.id);
-    return `<p>${product.title} × ${item.qty} - ${formatPrice(product.price * item.qty)}</p>`;
+
+    return `
+      <p>
+        ${product.title} × ${item.qty} - ${formatPrice(product.price * item.qty)}
+      </p>
+    `;
   }).join("");
 
-  const subtotal = cart.reduce((sum, item) => sum + getProduct(item.id).price * item.qty, 0);
+  const subtotal = cart.reduce((sum, item) => {
+    return sum + getProduct(item.id).price * item.qty;
+  }, 0);
+
   checkoutTotal.textContent = `Total: ${formatPrice(subtotal + 80)}`;
 }
 
@@ -471,6 +556,7 @@ function toggleWishlist(id) {
   }
 
   saveState();
+
   renderWishlist();
   renderProducts();
   renderSale();
@@ -487,13 +573,18 @@ function renderWishlist() {
 
   wishlistItems.innerHTML = wishlist.map(id => {
     const product = getProduct(id);
+
     return `
       <div class="wishlist-item">
         <img src="${product.img}" alt="${product.title}">
+
         <div>
           <strong>${product.title}</strong>
           <p>${formatPrice(product.price)}</p>
-          <button class="outline-btn" onclick="toggleWishlist(${id})">Remove</button>
+
+          <button class="outline-btn" onclick="toggleWishlist(${id})">
+            Remove
+          </button>
         </div>
       </div>
     `;
@@ -506,6 +597,7 @@ function renderWishlist() {
 
 function openQuickView(id) {
   const product = getProduct(id);
+
   currentModalProduct = product;
 
   document.getElementById("modalCode").textContent = product.code;
@@ -513,7 +605,9 @@ function openQuickView(id) {
   document.getElementById("modalDesc").textContent = product.desc;
   document.getElementById("modalOld").textContent = formatPrice(product.oldPrice);
   document.getElementById("modalPrice").textContent = formatPrice(product.price);
-  document.getElementById("modalDiscount").textContent = `${discountPercent(product.oldPrice, product.price)}% OFF`;
+  document.getElementById("modalDiscount").textContent =
+    `${discountPercent(product.oldPrice, product.price)}% OFF`;
+
   document.getElementById("modalMetal").textContent = product.metal;
   document.getElementById("modalWeight").textContent = product.weight;
   document.getElementById("modalStone").textContent = product.stone;
@@ -521,7 +615,11 @@ function openQuickView(id) {
   document.getElementById("modalMainImg").src = product.img;
 
   document.getElementById("modalThumbs").innerHTML = product.gallery.map((img, index) => `
-    <img src="${img}" class="${index === 0 ? "active" : ""}" onclick="changeModalImage('${img}', this)">
+    <img 
+      src="${img}" 
+      class="${index === 0 ? "active" : ""}" 
+      onclick="changeModalImage('${img}', this)"
+    >
   `).join("");
 
   openModal("quickModal");
@@ -529,16 +627,24 @@ function openQuickView(id) {
 
 function changeModalImage(src, element) {
   document.getElementById("modalMainImg").src = src;
-  document.querySelectorAll("#modalThumbs img").forEach(img => img.classList.remove("active"));
+
+  document.querySelectorAll("#modalThumbs img").forEach(img => {
+    img.classList.remove("active");
+  });
+
   element.classList.add("active");
 }
 
 document.getElementById("modalAddCart").addEventListener("click", () => {
-  if (currentModalProduct) addToCart(currentModalProduct.id);
+  if (currentModalProduct) {
+    addToCart(currentModalProduct.id);
+  }
 });
 
 document.getElementById("modalWishlist").addEventListener("click", () => {
-  if (currentModalProduct) toggleWishlist(currentModalProduct.id);
+  if (currentModalProduct) {
+    toggleWishlist(currentModalProduct.id);
+  }
 });
 
 // ============================
@@ -551,7 +657,10 @@ function openPanel(id) {
 }
 
 function closePanels() {
-  document.querySelectorAll(".mobile-sidebar, .side-panel").forEach(panel => panel.classList.remove("active"));
+  document.querySelectorAll(".mobile-sidebar, .side-panel").forEach(panel => {
+    panel.classList.remove("active");
+  });
+
   overlay.classList.remove("active");
 }
 
@@ -569,26 +678,52 @@ document.getElementById("menuOpen").addEventListener("click", () => {
 });
 
 document.getElementById("menuClose").addEventListener("click", closePanels);
-document.getElementById("cartToggle").addEventListener("click", () => openPanel("cartPanel"));
-document.getElementById("wishlistToggle").addEventListener("click", () => openPanel("wishlistPanel"));
-document.getElementById("accountToggle").addEventListener("click", () => openModal("accountModal"));
-document.getElementById("checkoutOpen").addEventListener("click", () => openModal("checkoutModal"));
+
+document.getElementById("cartToggle").addEventListener("click", () => {
+  openPanel("cartPanel");
+});
+
+document.getElementById("wishlistToggle").addEventListener("click", () => {
+  openPanel("wishlistPanel");
+});
+
+document.getElementById("accountToggle").addEventListener("click", () => {
+  openModal("accountModal");
+});
+
+document.getElementById("checkoutOpen").addEventListener("click", () => {
+  openModal("checkoutModal");
+});
 
 overlay.addEventListener("click", closePanels);
 
-document.querySelectorAll("[data-close]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const type = btn.dataset.close;
-    if (type === "cart" || type === "wishlist") closePanels();
-    if (type === "quick") closeModal("quickModal");
-    if (type === "account") closeModal("accountModal");
-    if (type === "checkout") closeModal("checkoutModal");
+document.querySelectorAll("[data-close]").forEach(button => {
+  button.addEventListener("click", () => {
+    const type = button.dataset.close;
+
+    if (type === "cart" || type === "wishlist") {
+      closePanels();
+    }
+
+    if (type === "quick") {
+      closeModal("quickModal");
+    }
+
+    if (type === "account") {
+      closeModal("accountModal");
+    }
+
+    if (type === "checkout") {
+      closeModal("checkoutModal");
+    }
   });
 });
 
 document.querySelectorAll(".modal").forEach(modal => {
-  modal.addEventListener("click", e => {
-    if (e.target === modal) modal.classList.remove("active");
+  modal.addEventListener("click", event => {
+    if (event.target === modal) {
+      modal.classList.remove("active");
+    }
   });
 });
 
@@ -600,8 +735,8 @@ document.getElementById("searchToggle").addEventListener("click", () => {
   document.getElementById("searchPanel").classList.toggle("active");
 });
 
-document.getElementById("searchInput").addEventListener("input", e => {
-  const value = e.target.value.toLowerCase().trim();
+document.getElementById("searchInput").addEventListener("input", event => {
+  const value = event.target.value.toLowerCase().trim();
   const box = document.getElementById("searchSuggestions");
 
   if (!value) {
@@ -609,15 +744,17 @@ document.getElementById("searchInput").addEventListener("input", e => {
     return;
   }
 
-  const matched = products.filter(p =>
-    p.title.toLowerCase().includes(value) ||
-    p.category.toLowerCase().includes(value) ||
-    p.subcategory.toLowerCase().includes(value)
-  ).slice(0, 5);
+  const matched = products.filter(product => {
+    return (
+      product.title.toLowerCase().includes(value) ||
+      product.category.toLowerCase().includes(value) ||
+      product.subcategory.toLowerCase().includes(value)
+    );
+  }).slice(0, 5);
 
-  box.innerHTML = matched.map(p => `
-    <div class="suggestion-item" onclick="openQuickView(${p.id})">
-      ${p.title} - ${formatPrice(p.price)}
+  box.innerHTML = matched.map(product => `
+    <div class="suggestion-item" onclick="openQuickView(${product.id})">
+      ${product.title} - ${formatPrice(product.price)}
     </div>
   `).join("");
 
@@ -629,26 +766,34 @@ document.getElementById("searchInput").addEventListener("input", e => {
 // ============================
 
 function setTheme(theme) {
-  if (theme === "dark") document.body.classList.add("dark");
-  else document.body.classList.remove("dark");
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+  } else {
+    document.body.classList.remove("dark");
+  }
 
   localStorage.setItem("theme", theme);
 }
 
 function toggleTheme() {
   const isDark = document.body.classList.contains("dark");
+
   setTheme(isDark ? "light" : "dark");
 }
 
 document.getElementById("themeToggle").addEventListener("click", toggleTheme);
 document.getElementById("mobileThemeToggle").addEventListener("click", toggleTheme);
 
-if (localStorage.getItem("theme") === "dark") setTheme("dark");
+if (localStorage.getItem("theme") === "dark") {
+  setTheme("dark");
+}
 
 document.getElementById("currencySelect").value = currentCurrency;
-document.getElementById("currencySelect").addEventListener("change", e => {
-  currentCurrency = e.target.value;
+
+document.getElementById("currencySelect").addEventListener("change", event => {
+  currentCurrency = event.target.value;
   localStorage.setItem("currency", currentCurrency);
+
   renderProducts();
   renderSale();
   renderFeatured();
@@ -668,7 +813,9 @@ document.getElementById("currencySelect").addEventListener("change", e => {
   stockFilter,
   sortFilter,
   productSearch
-].forEach(el => el.addEventListener("input", renderProducts));
+].forEach(element => {
+  element.addEventListener("input", renderProducts);
+});
 
 priceFilter.addEventListener("input", () => {
   priceValue.textContent = Number(priceFilter.value).toLocaleString("en-BD");
@@ -685,6 +832,7 @@ document.getElementById("resetFilters").addEventListener("click", () => {
   productSearch.value = "";
   priceFilter.value = 200000;
   priceValue.textContent = "200000";
+
   renderProducts();
 });
 
@@ -701,14 +849,24 @@ document.getElementById("trackBtn").addEventListener("click", () => {
     return;
   }
 
-  steps.forEach(step => step.classList.remove("active"));
+  steps.forEach(step => {
+    step.classList.remove("active");
+  });
 
   let activeCount = 2;
-  if (value.toUpperCase().includes("1001")) activeCount = 4;
-  if (value.toUpperCase().includes("1002")) activeCount = 3;
+
+  if (value.toUpperCase().includes("1001")) {
+    activeCount = 4;
+  }
+
+  if (value.toUpperCase().includes("1002")) {
+    activeCount = 3;
+  }
 
   steps.forEach((step, index) => {
-    if (index < activeCount) step.classList.add("active");
+    if (index < activeCount) {
+      step.classList.add("active");
+    }
   });
 
   showToast("Order status updated");
@@ -720,10 +878,16 @@ document.getElementById("trackBtn").addEventListener("click", () => {
 
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".auth-form").forEach(f => f.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(item => {
+      item.classList.remove("active");
+    });
+
+    document.querySelectorAll(".auth-form").forEach(form => {
+      form.classList.remove("active");
+    });
 
     tab.classList.add("active");
+
     document.getElementById(tab.dataset.tab + "Form").classList.add("active");
   });
 });
@@ -735,10 +899,12 @@ document.getElementById("placeOrder").addEventListener("click", () => {
   }
 
   cart = [];
+
   saveState();
   renderCart();
   closeModal("checkoutModal");
   closePanels();
+
   showToast("Order placed successfully");
 });
 
@@ -754,23 +920,43 @@ window.addEventListener("scroll", () => {
   backTop.classList.toggle("show", window.scrollY > 500);
 });
 
-backTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+backTop.addEventListener("click", () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});
 
 const revealObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.classList.add("active");
+    if (entry.isIntersecting) {
+      entry.target.classList.add("active");
+    }
   });
-}, { threshold: 0.15 });
+}, {
+  threshold: 0.15
+});
 
-document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+document.querySelectorAll(".reveal").forEach(element => {
+  revealObserver.observe(element);
+});
 
+// ============================
 // FEATURED SCROLL
+// ============================
+
 document.getElementById("prevFeatured").addEventListener("click", () => {
-  featuredTrack.scrollBy({ left: -300, behavior: "smooth" });
+  featuredTrack.scrollBy({
+    left: -300,
+    behavior: "smooth"
+  });
 });
 
 document.getElementById("nextFeatured").addEventListener("click", () => {
-  featuredTrack.scrollBy({ left: 300, behavior: "smooth" });
+  featuredTrack.scrollBy({
+    left: 300,
+    behavior: "smooth"
+  });
 });
 
 // ============================

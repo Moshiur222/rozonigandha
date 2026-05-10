@@ -1,0 +1,38 @@
+<div class="modal" id="checkoutModal">
+    <div class="modal-card checkout-modal">
+        <button class="close-btn" data-close="checkout">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <h2>Checkout</h2>
+
+        <div class="checkout-grid">
+            <form>
+                <input type="text" placeholder="Customer name">
+                <input type="tel" placeholder="Phone number">
+                <input type="email" placeholder="Email address">
+                <input type="text" placeholder="City">
+
+                <textarea placeholder="Full delivery address"></textarea>
+
+                <select>
+                    <option>Cash on Delivery</option>
+                    <option>Bkash</option>
+                    <option>Nagad</option>
+                    <option>Card Payment</option>
+                </select>
+
+                <button type="button" class="gold-btn full" id="placeOrder">
+                    Place Order
+                </button>
+            </form>
+
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <div id="checkoutSummary"></div>
+                <hr>
+                <strong id="checkoutTotal"></strong>
+            </div>
+        </div>
+    </div>
+</div>
